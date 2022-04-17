@@ -1,0 +1,53 @@
+# second example of a neural network
+import tensorflow as tf
+import matplotlib.pyplot as plt
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# print(x_train[0])
+
+# show the image
+# plt.imshow(x_train[0], cmap=plt.cm.binary)
+# plt.show()
+# print(f'The figure is: {y_train[0]}')
+#----------------------------------------------------------------------------------------------------------------------
+# normalize the data
+x_train = tf.keras.utils.normalize(x_train, axis=1)  # axis=1 is for the columns (features)
+x_test = tf.keras.utils.normalize(x_test, axis=1)  # axis=1 is for the columns (features)
+# show the image
+# plt.imshow(x_train[0], cmap=plt.cm.binary)
+# plt.show()
+# print(x_train[0])
+#----------------------------------------------------------------------------------------------------------------------
+# create the model
+model = tf.keras.models.Sequential(
+    [
+        tf.keras.layers.Flatten(input_shape=(28, 28)),
+        tf.keras.layers.Dense(128, activation=tf.nn.relu),
+        tf.keras.layers.Dense(128, activation=tf.nn.relu),
+        tf.keras.layers.Dense(10, activation=tf.nn.softmax)
+    ]
+)
+# compile the model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# train the model
+model.fit(x_train, y_train, epochs=12)
+# evaluate the model
+val_loss, val_acc = model.evaluate(x_test, y_test)
+print(f'The accuracy is: {val_acc}')
+print(f'The loss is: {val_loss}')
+#----------------------------------------------------------------------------------------------------------------------
+# save the model
+model.save('next_model.model')
+#----------------------------------------------------------------------------------------------------------------------
+# load the model
+new_model = tf.keras.models.load_model('next_model.model')
+prd = new_model.predict(x_test)
+print(prd)
+#----------------------------------------------------------------------------------------------------------------------
+import numpy as np
+max_val = np.argmax(prd[0])
+print(max_val)
+plt.imshow(x_test[0], cmap=plt.cm.binary)
+plt.show()
+#----------------------------------------------------------------------------------------------------------------------
